@@ -22,7 +22,9 @@ I mostly followed the page speed insights recommendations.
 I used Grunt to:
 + minify html
 + uglify javascript
-+ I tried to use Grunt to minify images but it did not do a good enough job for page speed insights so I had to modify images by hand and place them in the dist/img folder
+
+
+Images were optimized and resized if necessary with Gimp.
 
 
 ### 60 FPS Goal
