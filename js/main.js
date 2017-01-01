@@ -491,28 +491,19 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 var items;
-var phaseCalc;
-var phase;
-var scrollTop;
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
-  scrollTop = document.body.scrollTop;
-  phaseCalc = scrollTop / 1250;
+  var top = (document.body.scrollTop / 1250);
+  var sinPhaseArray = [];
+  for (i = 0; i < 5; i++) {
+    sinPhaseArray.push(Math.sin(top + i));
+  }
 
-  console.log("======================= New call to updatePositions =======================");
   for (var i = 0; i < items.length; i++) {
-/*
-    console.log("----");
-    console.log("i = " + i);
-    console.log("i % 5 = " + (i % 5));
-    console.log("document.body.scrollTop = " + scrollTop);
-*/
-    phase = Math.sin(phaseCalc + (i % 5));
-    //console.log("phase = " + phase);
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-     //items[i].style.transform = 'translateX(' + (100*phase) + 'px)';
+    var pos = sinPhaseArray[i % 5] * 100;
+    items[i].style.transform = 'translateX(' + pos + 'px)';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -533,18 +524,18 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var spacing = 256;
-  var pizzaCount = 30;//window.innerHeight / cols;
-  console.log(pizzaCount);
-  for (var i = 0; i < pizzaCount; i++) {
+  var numberOfPizzas = Math.round(window.innerHeight / spacing) * cols;
+  console.log(numberOfPizzas);
+  for (var i = 0; i < numberOfPizzas; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "img/pizza.png";
-    elem.style.height = "100px";
-    elem.style.width = "73.333px";
-    elem.basicLeft = (i % cols) * spacing;
+    elem.style.height = '100px';
+    elem.style.width = "auto";
+    elem.style.left = ((i % cols) * spacing) + 'px';
     elem.style.top = (Math.floor(i / cols) * spacing) + 'px';
     document.getElementById("movingPizzas1").appendChild(elem);
   }
-  items = document.querySelectorAll('.mover');
+  items = document.getElementsByClassName('mover');
   updatePositions();
 });
