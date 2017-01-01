@@ -406,15 +406,16 @@ var resizePizzas = function(size) {
 
   // Changes the value for the size of the pizza above the slider
   function changeSliderLabel(size) {
+    var pizzaSize = document.getElementById("pizzaSize");
     switch(size) {
       case "1":
-      document.querySelector("#pizzaSize").innerHTML = "Small";
+      pizzaSize.innerHTML = "Small";
       return;
       case "2":
-      document.querySelector("#pizzaSize").innerHTML = "Medium";
+      pizzaSize.innerHTML = "Medium";
       return;
       case "3":
-      document.querySelector("#pizzaSize").innerHTML = "Large";
+      pizzaSize.innerHTML = "Large";
       return;
       default:
       console.log("bug in changeSliderLabel");
@@ -489,17 +490,29 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
-
+var items;
+var phaseCalc;
+var phase;
+var scrollTop;
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
+  scrollTop = document.body.scrollTop;
+  phaseCalc = scrollTop / 1250;
 
-  var items = document.querySelectorAll('.mover');
-  var phaseCalc = document.body.scrollTop / 1250;
+  console.log("======================= New call to updatePositions =======================");
   for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin(phaseCalc + (i % 5));
+/*
+    console.log("----");
+    console.log("i = " + i);
+    console.log("i % 5 = " + (i % 5));
+    console.log("document.body.scrollTop = " + scrollTop);
+*/
+    phase = Math.sin(phaseCalc + (i % 5));
+    //console.log("phase = " + phase);
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+     //items[i].style.transform = 'translateX(' + (100*phase) + 'px)';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -510,8 +523,9 @@ function updatePositions() {
     var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
     logAverageFrame(timesToUpdatePosition);
   }
+  //requestAnimationFrame(updatePositions);
 }
-
+//requestAnimationFrame(updatePositions);
 // runs updatePositions on scroll
 window.addEventListener('scroll', updatePositions);
 
@@ -519,7 +533,7 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var spacing = 256;
-  var pizzaCount = window.innerHeight / cols;
+  var pizzaCount = 30;//window.innerHeight / cols;
   console.log(pizzaCount);
   for (var i = 0; i < pizzaCount; i++) {
     var elem = document.createElement('img');
@@ -529,7 +543,8 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * spacing;
     elem.style.top = (Math.floor(i / cols) * spacing) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
+    document.getElementById("movingPizzas1").appendChild(elem);
   }
+  items = document.querySelectorAll('.mover');
   updatePositions();
 });
